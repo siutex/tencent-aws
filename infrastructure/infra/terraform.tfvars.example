@@ -1,0 +1,38 @@
+region = "eu-central-1"
+name = "edgeone-origin"
+vpc_id = "vpc-REPLACE"
+public_subnet_ids = ["subnet-public-a", "subnet-public-b"]
+private_subnet_ids = ["subnet-private-a", "subnet-private-b"]
+route53_zone_id = "ZREPLACE"
+static_origin_hostname = "static-origin.example.com"
+static_certificate_arn = "arn:aws:acm:eu-central-1:123456789012:certificate/REPLACE"
+proxy_image = "123456789012.dkr.ecr.eu-central-1.amazonaws.com/edgeone-origin-proxy@sha256:REPLACE_WITH_64_HEX_DIGEST"
+bucket_name = "replace-with-globally-unique-assets-bucket"
+create_bucket = true
+object_prefix = "public/"
+# Outputs of terraform -chdir=bootstrap output (two separate secrets).
+static_secret_arn = "arn:aws:secretsmanager:eu-central-1:123456789012:secret:edgeone-origin/static-origin-token-REPLACE"
+api_secret_arn = "arn:aws:secretsmanager:eu-central-1:123456789012:secret:edgeone-origin/api-origin-token-REPLACE"
+# edgeone_ipv4_cidrs is NOT set here: "origin-tools cidrs" writes
+# infra/edgeone_cidrs.auto.tfvars.json from the Tencent Origin Protection list.
+# Prefix list capacity; must not exceed the "rules per security group" quota (vpc/L-0EA8095F).
+edgeone_prefix_list_max_entries = 200
+# Keep no-store until "origin-tools audit-cache-control" confirms what lacks metadata.
+default_cache_control = "no-store"
+backend_ips = ["10.0.11.10", "10.0.12.10"]
+backend_port = 8080
+backend_security_group_id = "sg-REPLACE"
+backend_health_path = "/health"
+api_nlb_certificate_arn = "arn:aws:acm:eu-central-1:123456789012:certificate/REPLACE"
+api_nlb_tls_hostname = "api-internal.example.com"
+# Shared by ALL clients (everything arrives via EdgeOne). Size from current API metrics,
+# e.g. peak 1-minute Count / 60 with headroom. Per-client limits are configured in EdgeOne.
+api_rate_limit = REPLACE
+api_burst_limit = REPLACE
+# Concurrent S3 reads per proxy task (requests run on virtual threads).
+proxy_max_concurrency = 256
+# Requests per task per minute for target tracking; set from a load test.
+proxy_target_requests_per_minute = 1500
+
+# Monitored SNS destination required for production acceptance.
+alarm_action_arns = []

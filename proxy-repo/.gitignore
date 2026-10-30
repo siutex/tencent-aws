@@ -1,0 +1,12 @@
+**/target/
+**/__pycache__/
+*.pyc
+.terraform/
+**/.terraform/
+*.tfstate*
+*.tfplan
+*.tfvars
+*.auto.tfvars.json
+build/
+.env*
+*token*handover*
